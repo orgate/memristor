@@ -1,0 +1,182 @@
+from numpy import *
+import matplotlib.pyplot as plt
+from scipy.integrate import odeint
+
+eps = 0.01 # step size
+epst = 0.001 # time step size
+precision = 0.01 # used to check convergency
+volt = 0.05 # maximum input voltage
+
+# Function used for finding converging phin value
+def f1(phin,prev,next,precision):
+	value = ( prev+next*( exp(( next-prev )/0.026 )))/( 1+exp(( next-prev )/0.026 ) )
+	if abs(phin-value)>precision:
+		f1(value,prev,next,precision)
+	return value
+
+# Function used for finding converging phin value
+def f2(phip,prev,next,precision):
+	value = ( prev+next*( exp(( -next+prev )/0.026 )))/( 1+exp(( -next+prev )/0.026 ) )
+	if abs(phip-value)>precision:
+		f2(value,prev,next,precision)
+	return value
+
+
+fig = plt.figure()
+ax = plt.subplot(111)
+
+
+volt_list = arange(0.01,volt+0.01,0.01) # used to run the simulation for different input voltages
+
+# Simulated for different input voltages
+for Volt in volt_list:
+
+	xarray = arange(0,1,eps)
+
+
+	# Calculating quasi-fermi potential for electrons, phin(x) and mobile electron concentration, n(x)
+
+	phin = xarray*0 
+	phin[-1] = Volt # assumed zero everywhere except at the positive terminal
+
+	# Assuming "phin" converges after 100 iterations
+	for m in range(100):
+
+		# The phin values are updated from both the directions for every iteration
+
+		# Updating in forward direction i.e. from 0 to L
+		for i in range(len(xarray)):
+			if (i>0)&(i<len(xarray)-1):
+				prev = phin[i-1]
+				next = phin[i+1]
+				phi_old = phin[i]
+				phin[i] = f1(phi_old,prev,next,precision)
+
+		# Updating in backward direction i.e. from L to 0
+		for i in range(len(xarray)):
+			if (i>0)&(i<len(xarray)-1):
+				prev = phin[-i-2]
+				next = phin[-i]
+				phi_old = phin[-i-1]
+				phin[-i-1] = f1(phi_old,prev,next,precision)
+
+	nconc = xarray*0
+	for i in range(len(xarray)):
+		nconc[i] = exp(phin[i]/0.026)
+
+	nconc = nconc*(5*(10**19)) # Here ni is assumed to be 5*(10**19)
+
+
+
+	# Calculating quasi-fermi potential for electrons, phin(x) and mobile electron concentration, n(x)
+
+	phip = xarray*0
+	anscheck = xarray*0
+	phip[-1] = Volt # assumed zero everywhere except at the positive terminal
+ 
+	# Assuming "phip" converges after 100 iterations
+	for m in range(100):
+
+		# The phip values are updated from both the directions for every iteration
+
+		# Updating in forward direction i.e. from 0 to L
+		for i in range(len(xarray)):
+			if (i>0)&(i<len(xarray)-1):
+				prev = phip[i-1]
+				next = phip[i+1]
+				phi_old = phip[i]
+				phip[i] = f2(phi_old,prev,next,precision)
+
+		# Updating in backward direction i.e. from L to 0
+		for i in range(len(xarray)):
+			if (i>0)&(i<len(xarray)-1):
+				prev = phip[-i-2]
+				next = phip[-i]
+				phi_old = phip[-i-1]
+				phip[-i-1] = f2(phi_old,prev,next,precision)
+
+	for i in range(len(xarray)):
+		if (i!=0):
+			anscheck[i] = (phip[i]-phip[i-1])*exp(phip[i]/0.026)
+	pconc = xarray*0
+	for i in range(len(xarray)):
+		pconc[i] = exp(-phip[i]/0.026)
+
+	pconc = pconc*(5*(10**19)) # Here ni is assumed to be 5*(10**19)
+
+	#Now, from the above phin(x) and phip(x), we get electrostatic potential, phi(x) and ND(x) as follows
+	ND = ones(len(xarray)) # assuming all ones initially
+	phi = phin-phip # This approximation helps us to get phi(x) and ND(x), easily, because, I assumed here that phi(x) would remain the same for the rest of the simulation
+
+	delND = 2*precision
+	delphi = 0
+	NDl = ones(len(xarray)) # temporary ND(x), used while updating in forward direction, i.e. from 0 to L
+	NDr = ones(len(xarray)) # temporary ND(x), used while updating in backward direction, i.e. from L to 0
+
+	# Iteration is repeated as long as the ND(x) reaches a steady state, i.e. varies less than "precision" value for every iteration
+	while (delND>precision):
+
+		# First the boundary values are updated
+		ND[0] = ND[1] + (ND[0]*(phi[1]))/0.026 # From the fact that Jion[0] = 0
+		ND[-1] = ND[-2] - (ND[-2]*(phi[-2]))/0.026 # From the fact that Jion[L] = 0
+
+		delND = 0
+		ND_old = ND
+
+		# Iteration in forward direction
+		for i in range(len(xarray)):
+			if ((i>0) & (i<(len(xarray)-1))):
+				ND_oldl = ND_old[i]
+		
+				NDl[i] = ND_old[i] + epst*( (0.026*(ND_old[i+1]+ND_old[i-1]-(2*ND_old[i]))/(eps*eps)) + ((ND_old[i+1]-ND_old[i-1])*(phi[i+1]-phi[i-1])/(4*eps*eps)) + (ND_old[i]*(phi[i+1]+phi[i-1]-(2*phi[i]))/(2*eps*eps)) )
+
+				delND+=abs(ND_oldl - NDl[i])
+
+		# Iteration in backward direction
+		for i in range(len(xarray)):
+			if ((i>0) & (i<(len(xarray)-1))):
+				ND_oldr = ND_old[-i-1]
+		
+				NDr[-i-1] = ND_old[-i-1] + epst*( (0.026*(ND_old[-i]+ND_old[-i-2]-(2*ND_old[-i-1]))/(eps*eps)) + ((ND_old[-i]-ND_old[-i-2])*(phi[-i]-phi[-i-2])/(4*eps*eps)) + (ND_old[-i-1]*(phi[-i]+phi[-i-2]-(2*phi[-i-1]))/(2*eps*eps)) )
+
+				delND+=abs(ND_oldr - NDr[-i-1])
+
+		ND = (NDl+NDr)/2.0 # the mean of ND(x) values got from both directions is assumed to be the new ND(x)
+
+
+	# The boundary values are reupdated after the steady is reached
+	ND[0] = ND[1] + (ND[1]*(phi[1]))/0.026 # From the fact that Jion[0] = 0
+	ND[-1] = ND[-2] - (ND[-1]*(phi[-2]))/0.026 # From the fact that Jion[L] = 0
+
+	# log(ND(x)) is found for all x
+	log_ND = xarray*0
+	for i in range(len(xarray)):
+		log_ND[i] = log(abs(ND[i]))+log(10)
+
+
+	# Either log(ND(x)) or phi(x) is plotted for each input voltage
+	ax.plot(xarray,log_ND,label='$v = %.2fV$'%Volt)
+#	ax.plot(xarray,phi/0.026,label='$v = %.2f$'%Volt)
+
+
+###### The following lines contain different plotting functions used for different variables ######
+
+ax.legend(loc=3)
+plt.title('Semi-log plot of Ionic concentration - $N_{D}(x)/N_{D}^{*}$ \n (where $N_{D}^{*}=5X10^{19}cm^{-3}$)')
+#plt.title('Electrostatic potential - $\phi(x)/v_{0}$ for different input voltages \n (where $v_{0}=26mV$ is the thermal voltage)')
+#plt.title('Quasi-fermi potential of holes - $\phi_{p}(x)/v_{0}$ \n (where $v_{0}=%.2fV$ is input voltage)'%Volt)
+#plt.title('Mobile hole concentration - $p(x)/N_{D}^{*}$ \n (where $N_{D}^{*}=5X10^{19}cm^{-3}$)')
+ax.set_xlabel('length x/L')
+#ax.set_ylabel('Quasi-fermi potential of electrons - $\phi_{n}(x)/v_{0}$')
+#ax.set_ylabel('Quasi-fermi potential of holes - $\phi_{p}(x)/v_{0}$')
+#ax.set_ylabel('Mobile electron concentration - $n(x)/N_{D}^{*}$')
+#ax.set_ylabel('Mobile hole concentration - $p(x)/N_{D}^{*}$')
+#ax.set_ylabel('Electrostatic potential - $\phi(x)/v_{0}$')
+ax.set_ylabel('Semi-log plot of Ionic concentration - $N_{D}(x)/N_{D}^{*}$')
+#plt.plot(xarray,phin/Volt)
+#plt.plot(xarray,phip/Volt)
+#plt.plot(xarray,nconc/5e19)
+#plt.plot(xarray,pconc/5e19)
+#plt.plot(xarray,phi/0.026)
+#plt.plot(xarray,log_ND)
+plt.show()

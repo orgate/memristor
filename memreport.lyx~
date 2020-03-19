@@ -1,0 +1,1566 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2cm
+\topmargin 2cm
+\rightmargin 2cm
+\bottommargin 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Report on simulation of memristor physics
+\end_layout
+
+\begin_layout Author
+Alfred Ajay Aureate .R
+\begin_inset Newline newline
+\end_inset
+
+EE10B052
+\begin_inset Newline newline
+\end_inset
+
+EE Dept., IIT Madras
+\end_layout
+
+\begin_layout Section
+Introduction:
+\end_layout
+
+\begin_layout Standard
+In 2008, HP labs came up with a phenomenological model of the missing fourth
+ fundamental passive circuit element, memristor
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+[1]
+\end_layout
+
+\end_inset
+
+, as predicted by Leon Chua in 1971
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+[2]
+\end_layout
+
+\end_inset
+
+.
+ He predicted that such a device would have unique i-v characteristics,
+ which would look like a pinched hysteresis loop, where current goes to
+ zero, when voltage goes to zero.
+ Thus, it is a passive circuit element, i.e.
+ it does not generate or retain voltage.
+ But, since memristance
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+[1]
+\end_layout
+
+\end_inset
+
+ (of the memristor made by HP labs), 
+\begin_inset Formula 
+\[
+M(q)=R_{OFF}\left(1-\frac{\mu_{v}R_{ON}}{D^{2}}q(t)\right)
+\]
+
+\end_inset
+
+depends on charge at an instance, it means that the memristance is dependent
+ on the previous history of the current (because charge is total current
+ till that point), hence the name.
+ The memristive systems in general
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+[3]
+\end_layout
+
+\end_inset
+
+, satisfy the following equations: 
+\begin_inset Formula $v=R\left(w,i\right)i$
+\end_inset
+
+ ; and 
+\begin_inset Formula $\frac{dw}{dt}=f\left(w,i\right)$
+\end_inset
+
+, in which 
+\begin_inset Formula $v$
+\end_inset
+
+ is the voltage, 
+\begin_inset Formula $i$
+\end_inset
+
+ the current, 
+\begin_inset Formula $R$
+\end_inset
+
+ the instantaneous resistance, and 
+\begin_inset Formula $w$
+\end_inset
+
+ is a state variable, and for 
+\begin_inset Quotes eld
+\end_inset
+
+pure
+\begin_inset Quotes erd
+\end_inset
+
+ memristors neither 
+\begin_inset Formula $R$
+\end_inset
+
+ nor 
+\begin_inset Formula $f$
+\end_inset
+
+ are explicit functions of 
+\begin_inset Formula $i$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The memristor that HP labs came up with in 2008, had TiO
+\begin_inset script subscript
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+layer between two layers of metal electrodes.
+ Here stoichiometric TiO
+\begin_inset script subscript
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+ is used, which is self-doped, i.e.
+ it is actually, TiO
+\begin_inset script subscript
+
+\begin_layout Plain Layout
+2-x
+\end_layout
+
+\end_inset
+
+.
+ So, there are charged vacant oxygen sites and mobile oxygen ions.
+ This region is divided into two, based on the doping - highly doped ON
+ region and undoped OFF region.
+ These regions have different resistances, and the memristor device experiences
+ the combined effect, due to both.
+ The physical model of this memristor is simulated here
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+[4]
+\end_layout
+
+\end_inset
+
+, where the middle layer is modeled as a combination of an highly doped
+ semiconductor and the undoped material.
+ The state variable, 
+\begin_inset Formula $w$
+\end_inset
+
+ corresponds to the position of the sharp dividing line between the doped
+ and undoped semiconductor, and is bounded between two limits, 0 and 
+\begin_inset Formula $L$
+\end_inset
+
+, that corresponds to the positions of the metal contacts at either side
+ of a semiconductor film.
+\end_layout
+
+\begin_layout Section
+Model:
+\end_layout
+
+\begin_layout Standard
+A 1D model of the device is considered, with a semiconductor thin film that
+ contains charged mobile 
+\begin_inset Formula $n$
+\end_inset
+
+-type dopants with a concentration distribution 
+\begin_inset Formula $N_{D}(x)$
+\end_inset
+
+ confined by electrodes at 
+\begin_inset Formula $x=0$
+\end_inset
+
+ and 
+\begin_inset Formula $x=L$
+\end_inset
+
+.
+ The dimensions of the device along the 
+\begin_inset Formula $y-$
+\end_inset
+
+ and 
+\begin_inset Formula $z-$
+\end_inset
+
+directions are assumed to be much larger than 
+\begin_inset Formula $L$
+\end_inset
+
+, which is a reasonable approximation for thin film structures.
+ The active layer is partially compensated by a small amount of immobile
+ and uniformly distributed 
+\begin_inset Formula $p$
+\end_inset
+
+-type dopants with concentration 
+\begin_inset Formula $N_{A}\leq N_{D}^{*}$
+\end_inset
+
+, the average concentration of mobile dopants 
+\begin_inset Formula $(N_{D}^{*}=\int\left(N_{D}\left(x\right)/L\right)dx)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+In the discussion that follows, all quantities that are explicitly denoted
+ as functions of x are also functions of time and will be examined after
+ certain time intervals have elapsed.
+ For simplicity 
+\begin_inset Formula $N_{D}^{*}=5\times10^{19}cm^{-3}$
+\end_inset
+
+ , I'll assume that both donors and acceptors are shallow, and thus their
+ energy levels coincide with the corresponding conduction 
+\begin_inset Formula $E_{C}$
+\end_inset
+
+ and valence 
+\begin_inset Formula $E_{V}$
+\end_inset
+
+ band edges.
+ In this case, one can neglect thermal generation and recombination currents
+ for relatively large band gap materials.
+ Here, 
+\begin_inset Formula $n(x)$
+\end_inset
+
+ - electron concentration and 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $p(x)$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ - hole concentration are approximated with Fermi-Dirac statistics, that
+ is, with the separate quasi-Fermi potentials 
+\begin_inset Formula $\phi_{n}(x)$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi_{p}(x)$
+\end_inset
+
+, respectively.
+ Thus, the steady-state currents from the drift-diffusion approximation
+ for electrons and holes are determined from 
+\begin_inset Formula 
+\begin{equation}
+\nabla.(-en\left(x\right)\mu_{n}\nabla\phi_{n}\left(x\right))=0\label{eq: Steady state electron current is zero}
+\end{equation}
+
+\end_inset
+
+ and 
+\begin_inset Formula 
+\begin{equation}
+\nabla.(ep\left(x\right)\mu_{p}\nabla\phi_{p}\left(x\right))=0\label{eq: Steady state hole current is zero}
+\end{equation}
+
+\end_inset
+
+ where 
+\begin_inset Formula $n\left(x\right)=n_{i}exp\left[\frac{q\phi_{n}\left(x\right)}{k_{B}T}\right]$
+\end_inset
+
+ holds for electrons and similarly, for holes, I have 
+\begin_inset Formula $p\left(x\right)=n_{i}exp\left[-\frac{q\phi_{p}\left(x\right)}{k_{B}T}\right]$
+\end_inset
+
+ while the Poisson equation for the active layer with uniform permittivity
+ 
+\begin_inset Formula $\varepsilon\varepsilon_{0}$
+\end_inset
+
+ is 
+\begin_inset Formula 
+\begin{equation}
+-\varepsilon\varepsilon_{0}\triangle\phi\left(x\right)=e\left(p\left(x\right)-n\left(x\right)+f_{D}\left(x\right)N_{D}\left(x\right)-f_{A}\left(x\right)N_{A}\right)\label{eq: Poisson equation}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here, 
+\begin_inset Formula $e$
+\end_inset
+
+ is the unit charge, 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\phi\left(x\right)$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ the electrostatic potential, and 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mu_{n}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $(\mu_{p})$
+\end_inset
+
+ is the electron (hole) mobility, which is assumed to be independent of
+ the field.
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $f_{D}\left(x\right)$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ and 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $f_{A}\left(x\right)$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ are ionization factors for donors and acceptors, correspondingly, which
+ are found from the population statistics and typically equal to unity for
+ the considered simulation parameters.
+\end_layout
+
+\begin_layout Standard
+The non-equilibrium mobile ion distribution and ion flux 
+\begin_inset Formula $J_{ION}(x)$
+\end_inset
+
+ can also be found from drift-diffusion theory (here I am neglecting nonlinear
+ drift in high electric fields) and the continuity equation, that is, for
+ singly charged positive ions, 
+\begin_inset Formula 
+\begin{equation}
+J_{ION}(x)=-eD_{i}\nabla N_{D}\left(x\right)-eN_{D}\left(x\right)\mu_{i}\nabla\phi\left(x\right)\label{eq: Drift-diffusion equation}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and 
+\begin_inset Formula 
+\begin{equation}
+\frac{e\partial N_{D}\left(x\right)}{\partial t}=-\nabla.J_{ION}\left(x\right)\label{eq: Continuity equation for positive ions}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $D_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $\mu_{i}$
+\end_inset
+
+ are the ion diffusion constant and mobility, respectively, which are related
+ via the Einstein–Nernst equation.
+ 
+\end_layout
+
+\begin_layout Standard
+In this study I'll consider only bulk-limited transport, and the interfaces
+ are assumed to be purely ohmic for electrons.
+ This, for example, might correspond to either metal electrodes with adjacent
+ 
+\begin_inset Formula $\triangle$
+\end_inset
+
+-doped semiconductor interfacial layers or heavily doped semiconductor electrode
+s with a band gap similar to that of the transport layer.
+ The electron and hole concentrations are fixed to their equilibrium levels
+ defined by the Fermi potential at the interface, such that for an applied
+ bias 
+\begin_inset Formula $v$
+\end_inset
+
+ the boundary conditions are 
+\begin_inset Formula 
+\begin{equation}
+\phi_{n}\left(0\right)=\phi_{p}\left(0\right)\label{eq: At ground electrode}
+\end{equation}
+
+\end_inset
+
+ and 
+\begin_inset Formula 
+\begin{equation}
+\phi_{n}\left(L\right)=\phi_{p}\left(L\right)=\phi_{n}\left(0\right)+v\label{eq: At potential electrode}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The interfaces are assumed to be trap free and completely blocking for mobile
+ ions, so that the total number of mobile dopants, 
+\begin_inset Formula $LN_{D}^{*}$
+\end_inset
+
+ is constant, that is, 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula 
+\begin{equation}
+J_{ION}(0)=J_{ION}(L)=0\label{eq: Zero current density at electrodes}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this simulation, I'll neglect Joule heating and explicit temperature
+ effects.
+\end_layout
+
+\begin_layout Section
+Simulation:
+\end_layout
+
+\begin_layout Standard
+Equations 
+\begin_inset Formula $1–5$
+\end_inset
+
+ with boundary conditions 
+\begin_inset Formula $6–8$
+\end_inset
+
+ are solved numerically using an iterative procedure to achieve self- consistenc
+y.
+ 
+\end_layout
+
+\begin_layout Subsection
+Step 1:
+\end_layout
+
+\begin_layout Standard
+Equation 
+\begin_inset Formula $1$
+\end_inset
+
+ has only one unknown, 
+\begin_inset Formula $\phi_{n}\left(x\right)/v_{0}$
+\end_inset
+
+, because even 
+\begin_inset Formula $n\left(x\right)$
+\end_inset
+
+ could be described in terms of 
+\begin_inset Formula $\phi_{n}\left(x\right)$
+\end_inset
+
+.
+ When written in discrete form, I have 
+\begin_inset Formula $\phi_{n}\left(x\right)$
+\end_inset
+
+ in terms of 
+\begin_inset Formula $\phi_{n}\left(x+h\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi_{n}\left(x-h\right)$
+\end_inset
+
+, where 
+\begin_inset Formula $h$
+\end_inset
+
+ is the step size for distance in the simulation.
+ I used the boundary conditions for 
+\begin_inset Formula $\phi_{n}\left(x\right)$
+\end_inset
+
+ at the end points from equations 
+\begin_inset Formula $6$
+\end_inset
+
+ and 
+\begin_inset Formula $7$
+\end_inset
+
+, to get the values of 
+\begin_inset Formula $\phi_{n}\left(x\right)$
+\end_inset
+
+ for all 
+\begin_inset Formula $x$
+\end_inset
+
+.
+ Then, similarly, I repeated the same things for holes using equation 
+\begin_inset Formula $2$
+\end_inset
+
+ and boundary conditions from equations 
+\begin_inset Formula $6$
+\end_inset
+
+ and 
+\begin_inset Formula $7$
+\end_inset
+
+, to get the values for 
+\begin_inset Formula $\phi_{p}\left(x\right)$
+\end_inset
+
+ for all 
+\begin_inset Formula $x$
+\end_inset
+
+.
+ Actually, the exact finite difference form of equation 
+\begin_inset Formula $1$
+\end_inset
+
+ and 
+\begin_inset Formula $2$
+\end_inset
+
+ that I solved is derived as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left(1\right)\Rightarrow\nabla.(-en\left(x\right)\mu_{n}\nabla\phi_{n}\left(x\right))=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+we also know that,
+\begin_inset Formula 
+\[
+n\left(x\right)=n_{i}exp\left[\frac{q\phi_{n}\left(x\right)}{k_{B}T}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\Rightarrow-e\frac{\partial}{\partial x}\left[n_{i}exp\left(\frac{q\phi_{n}\left(x\right)}{k_{B}T}\right)\right]\mu_{n}\frac{\partial}{\partial x}\left(\phi_{n}\left(x\right)\right)-en_{i}exp\left(\frac{q\phi_{n}\left(x\right)}{k_{B}T}\right)\mu_{n}\frac{\partial^{2}}{\partial x^{2}}\left(\phi_{n}\left(x\right)\right)=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\Rightarrow\frac{q}{k_{B}T}\left[\frac{\partial}{\partial x}\left(\phi_{n}\left(x\right)\right)\right]^{2}=-\frac{\partial^{2}}{\partial x^{2}}\left(\phi_{n}\left(x\right)\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\frac{k_{B}T}{q}=26mV$
+\end_inset
+
+.
+ Now, this equation in finite difference form:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{1}{0.026}\left[\frac{\phi_{n}\left(x+h\right)-\phi_{n}\left(x-h\right)}{2h}\right]^{2}=-\frac{\phi_{n}\left(x+h\right)-2\phi_{n}\left(x\right)+\phi_{n}\left(x-h\right)}{h^{2}}\label{eq: Finite difference form of equation (1)}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now, similarly from equation 
+\begin_inset Formula $2$
+\end_inset
+
+ and 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $p\left(x\right)=n_{i}exp\left[\frac{-q\phi_{p}\left(x\right)}{k_{B}T}\right]$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+, I got the following difference equation for holes:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{1}{0.026}\left[\frac{\phi_{p}\left(x+h\right)-\phi_{p}\left(x-h\right)}{2h}\right]^{2}=\frac{\phi_{p}\left(x+h\right)-2\phi_{p}\left(x\right)+\phi_{p}\left(x-h\right)}{h^{2}}\label{eq: Finite difference form of equation (2)}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+By solving the above equations for 
+\begin_inset Formula $\phi_{n}\left(x\right)$
+\end_inset
+
+ and
+\begin_inset Formula $\phi_{p}\left(x\right)$
+\end_inset
+
+, I got the following plot for electrons (figure 1) and holes (figure 2).
+ Here, 
+\begin_inset Formula $v_{0}=%0.01V
+$
+\end_inset
+
+ is input voltage and 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $N_{D}^{*}=5\times10^{19}cm^{-3}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Quasi-fermi potential of electrons - 
+\begin_inset Formula $\phi_{n}(x)/v_{0}$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename Screenshot from 2014-09-22 13:31:23.png
+	scale 45
+	BoundingBox 0bp 0bp 641bp 479bp
+	clip
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Quasi-fermi potential of holes - 
+\begin_inset Formula $\phi_{p}(x)/v_{0}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename Screenshot from 2014-09-22 13:32:33.png
+	scale 45
+	BoundingBox 0bp 0bp 642bp 477bp
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Mobile electron concentration - 
+\begin_inset Formula $n(x)/N_{D}^{*}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename Screenshot from 2014-09-22 13:50:38.png
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Mobile hole concentration - 
+\begin_inset Formula $p(x)/N_{D}^{*}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename Screenshot from 2014-09-22 13:51:55.png
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Step 2:
+\end_layout
+
+\begin_layout Standard
+After this, I tried to solve for 
+\begin_inset Formula $\phi\left(x\right)$
+\end_inset
+
+ from equation 
+\begin_inset Formula $3$
+\end_inset
+
+.
+ Here, 
+\begin_inset Formula $n\left(x\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $p\left(x\right)$
+\end_inset
+
+ are known from the previous step.
+ 
+\begin_inset Formula $N_{D}\left(x\right)$
+\end_inset
+
+ is initially assumed to be uniformly distributed across the length, i.e.
+ 
+\begin_inset Formula $N_{D}\left(x\right)=N_{D}^{*}$
+\end_inset
+
+.
+ But, for later iterations, I used 
+\begin_inset Formula $N_{D}\left(x\right)$
+\end_inset
+
+ got from the continuity equation that is described in the subsequent steps.
+ One important thing to note here is that, I assumed the boundary conditions
+ at end poins to be zero, i.e.
+ 
+\begin_inset Formula $\phi\left(0\right)=\phi\left(L\right)=0$
+\end_inset
+
+.
+ Unfortunately, due to convergence issues, I approximated 
+\begin_inset Formula $\phi\left(x\right)$
+\end_inset
+
+ to be 
+\begin_inset Formula $\phi\left(x\right)\approx\phi_{n}\left(x\right)-\phi_{p}\left(x\right)$
+\end_inset
+
+ for the remaining simulation, thereby, avoiding the need to solve for equation
+ 
+\begin_inset Formula $3$
+\end_inset
+
+.
+ So, I got the following plot for 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\phi\left(x\right)$
+\end_inset
+
+ for different values of input voltages:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Electrostatic potential - 
+\begin_inset Formula $\phi(x)/v_{0}$
+\end_inset
+
+ for different input voltages (where 
+\begin_inset Formula $v_{0}=26mV$
+\end_inset
+
+ is the thermal voltage)
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename Screenshot from 2014-09-22 14:43:46.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Step 3:
+\end_layout
+
+\begin_layout Standard
+Now, using equation 
+\begin_inset Formula $4$
+\end_inset
+
+ and boundary condition described in equation 
+\begin_inset Formula $8$
+\end_inset
+
+, I got the new values of 
+\begin_inset Formula $N_{D}\left(x\right)$
+\end_inset
+
+ at end points or boundary points, i.e.
+ 
+\begin_inset Formula $N_{D}\left(0\right)$
+\end_inset
+
+and 
+\begin_inset Formula $N_{D}\left(L\right)$
+\end_inset
+
+.
+ I would be using the 
+\begin_inset Formula $\phi\left(x\right)$
+\end_inset
+
+ got from the previous step for this.
+\end_layout
+
+\begin_layout Subsection
+Step 4:
+\end_layout
+
+\begin_layout Standard
+Finally, the new 
+\begin_inset Formula $N_{D}\left(x\right)$
+\end_inset
+
+ for all other values of 
+\begin_inset Formula $x$
+\end_inset
+
+, is determined using equation 
+\begin_inset Formula $5$
+\end_inset
+
+ (continuity equation) and older values of 
+\begin_inset Formula $N_{D}\left(x\right)$
+\end_inset
+
+ and 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\phi\left(x\right)$
+\end_inset
+
+ which were got from the previous steps.
+ The variation in the distribution 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $N_{D}\left(x\right)$
+\end_inset
+
+ with time shows us the movement of the thin wall region.
+ The exact finite difference equation that I used is derived as follows:
+\end_layout
+
+\begin_layout Standard
+Combining equations (
+\begin_inset Formula $4$
+\end_inset
+
+) and (
+\begin_inset Formula $5$
+\end_inset
+
+), gives:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{\partial}{\partial t}\left(N_{D}(x)\right)=D_{i}\frac{\partial^{2}}{\partial x^{2}}\left(N_{D}(x)\right)+\mu_{i}\left[\frac{\partial}{\partial x}\left(N_{D}(x)\right)\right]\left[\frac{\partial\phi\left(x\right)}{\partial x}\right]+\mu_{i}N_{D}\left(x\right)\frac{\partial^{2}\phi(x)}{\partial x^{2}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This could be written in finite difference form as folows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{N_{D}^{new}\left(x\right)-N_{D}^{old}\left(x\right)}{\Delta t}=D_{i}\frac{N_{D}^{old}\left(x+h\right)-2N_{D}^{old}\left(x\right)+N_{D}^{old}\left(x-h\right)}{h^{2}}+\mu_{i}\left[\frac{N_{D}^{old}\left(x+h\right)-N_{D}^{old}\left(x-h\right)}{2h}\right]\left[\frac{\phi\left(x+h\right)-\phi\left(x-h\right)}{2h}\right]+\mu_{i}N_{D}^{old}\left(x\right)\frac{\phi\left(x+h\right)-2\phi\left(x\right)+\phi\left(x-h\right)}{2h}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $N_{D}^{new}\left(x\right)$
+\end_inset
+
+ got from the above equation was assumed to be 
+\begin_inset Formula $N_{D}^{old}\left(x\right)$
+\end_inset
+
+ and the above equation was solved again.
+ This iteration was repeated until a steady state 
+\begin_inset Formula $N_{D}\left(x\right)$
+\end_inset
+
+ was got.
+ That is, when the left hand side of equation (
+\begin_inset Formula $5$
+\end_inset
+
+) almost goes to zero.
+ This actually, results in constant 
+\begin_inset Formula $J_{ION}\left(x\right)$
+\end_inset
+
+ for all 
+\begin_inset Formula $x$
+\end_inset
+
+, because its gradient becomes zero.
+ But, from the boundary equation (
+\begin_inset Formula $8$
+\end_inset
+
+), we know that this constant should be zero.
+ The steady state 
+\begin_inset Formula $N_{D}\left(x\right)$
+\end_inset
+
+ for the ions is plotted in the following diagram.
+ Here, 
+\begin_inset Formula $N_{D}\left(x\right)$
+\end_inset
+
+, was initially assumed to be constant everywhere, which was 
+\begin_inset Formula $N_{D}^{*}=5\times10^{19}cm^{-3}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Semi-log plot of Ionic concentration - 
+\begin_inset Formula $N_{D}(x)/N_{D}^{*}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename Screenshot from 2014-09-22 14:51:36.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Step 
+\begin_inset Formula $1$
+\end_inset
+
+ was repeated iteratively for a particular voltage value, until steady state
+ condition was reached.
+ This was done separately for electrons and holes.
+ Then, from step 
+\begin_inset Formula $2$
+\end_inset
+
+, 
+\begin_inset Formula $\phi\left(x\right)$
+\end_inset
+
+ was found.
+ This was assumed to be constant for all the time instants.
+ Then, to get the values of 
+\begin_inset Formula $N_{D}\left(x\right)$
+\end_inset
+
+, for next time instant, i.e.
+ for 
+\begin_inset Formula $t+\triangle t$
+\end_inset
+
+, where 
+\begin_inset Formula $\triangle t$
+\end_inset
+
+ is the time step in this simulation, step 
+\begin_inset Formula $3$
+\end_inset
+
+ and 
+\begin_inset Formula $4$
+\end_inset
+
+ are performed using the values of 
+\begin_inset Formula $N_{D}\left(x\right)$
+\end_inset
+
+ at time 
+\begin_inset Formula $t$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi\left(x\right)$
+\end_inset
+
+ .
+ This gave 
+\begin_inset Formula $N_{D}\left(x\right)$
+\end_inset
+
+ for time 
+\begin_inset Formula $t+\triangle t$
+\end_inset
+
+.
+ This was repeated iteratively until 
+\begin_inset Formula $N_{D}\left(x\right)$
+\end_inset
+
+ reaches a steady state.
+ The above plot shows that these steady state 
+\begin_inset Formula $N_{D}\left(x\right)$
+\end_inset
+
+ moves inside as the voltage is increased.
+ Thus, the movement of thin wall region in the 
+\begin_inset Formula $TiO_{2}$
+\end_inset
+
+ memristor as the voltage is varied is shown, thereby verifying the memristive
+ action in such a device.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "1"
+key "key-1"
+
+\end_inset
+
+D.
+ B.
+ Strukov, G.
+ S.
+ Snider, D.
+ R.
+ Stewart, R.
+ S.
+ Williams, Nature 2008, 453, 80.
+ 
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "2"
+key "key-2"
+
+\end_inset
+
+L.
+ O.
+ Chua, IEEE Trans.
+ Circuit Theory 1971, 18, 507.
+ 
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "3"
+key "key-3"
+
+\end_inset
+
+L.
+ O.
+ Chua, S.
+ M.
+ Kang, Proc.
+ IEEE 1976, 64, 209.
+ 
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "4"
+key "key-4"
+
+\end_inset
+
+D.
+ B.
+ Strukov, J.
+ L.
+ Borghetti, D.
+ R.
+ Stewart, R.
+ S.
+ Williams, 2009.
+ Small, 5: 1058–1063.
+\end_layout
+
+\end_body
+\end_document
